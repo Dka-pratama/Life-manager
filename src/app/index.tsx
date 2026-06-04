@@ -1,98 +1,102 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, StyleSheet, Button } from "react-native";
+import {useEffect, useState} from "react";
+import {createTask, getTasks} from "../repositories/TaskRepository";
+import {FlatList} from "react-native-gesture-handler";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { router } from "expo-router";
+import {setSetting, getSetting} from "../repositories/SettingsRepository";
+import {Task} from "../types/task";
+import Card from "@/components/ui/Card"
+import { useTheme } from '@/contexts/ThemeContext';
+import { BlurView } from 'expo-blur';
+import Text from "@/components/ui/Text";
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
+
+export default function Index() {
+  useEffect(() => {
+    async function testDb() {
+      await createTask({
+        title: "Test Task",
+        description: "This is a test task"
+      });
+    }
+
+  }, []);
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  async function loadTasks() {
+    const data = await getTasks();
+    setTasks(data);
   }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
+
+  async function testSettings() {
+    await setSetting("theme", "dark");
+    const theme = await getSetting("theme");
+
+    console.log("Theme setting:", theme);
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+
+  useEffect(() => {
+    testSettings();
+  }, []);
+
+  const { colors, changeTheme, themeMode } = useTheme();
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={styles(colors).container}>
+      <Button
+        title="Go to Profile"
+        onPress={() => router.push("/(tabs)/profile")}
+      />
+      
+      <Text variant="heading2">Testing database.</Text>
+      <FlatList
+      data={tasks}
+      renderItem={({ item }) => (
+        <BlurView intensity={30}>
+        <Card>
+      <Text variant="body">{item.title} {item.id} {item.description}</Text>
+      <Text variant="bodySmall" color="secondary">{item.description}</Text>
+      <Text variant="caption" color="secondary">{item.title} {item.id} {item.description}</Text>
+        </Card>
+        </BlurView>
+      )}
+        />
+              <Text
+      style={{ 
+        color: colors.text,
+        marginBottom: 20
+       }}>Theme : {themeMode}</Text>
+
+       <Button
+        title="Light Mode"
+        onPress={() => changeTheme('light')}
+        color={colors.primary}
+       />
+        <Button
+        title="Dark Mode"
+        onPress={() => changeTheme('dark')}
+        color={colors.primary}
+       />
+       <Button
+        title="System Default"
+        onPress={() => changeTheme('system')}
+        color={colors.primary}
+       />
+    </View>
   );
 }
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
+const styles = (Colors : any) =>
+  StyleSheet.create({
   container: {
+    backgroundColor: Colors.background,
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

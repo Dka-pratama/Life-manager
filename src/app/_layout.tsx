@@ -1,15 +1,26 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DatabaseProvider from "../database/DatabaseProvider";
+import {ThemeProvider} from "../contexts/ThemeContext";
+import { useFonts } from "expo-font";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export default function RootLayout() {
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+    const [loaded] = useFonts({
+    ManropeRegular: require("../../assets/fonts/Manrope-Regular.ttf"),
+    ManropeMedium: require("../../assets/fonts/Manrope-Medium.ttf"),
+    ManropeSemiBold: require("../../assets/fonts/Manrope-SemiBold.ttf"),
+    ManropeBold: require("../../assets/fonts/Manrope-Bold.ttf"),
+    ManropeExtraBold: require("../../assets/fonts/Manrope-ExtraBold.ttf"),
+  });
+  if (!loaded) return null;
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
+    <ThemeProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <DatabaseProvider>
+          <Stack />
+        </DatabaseProvider>
+      </GestureHandlerRootView>
     </ThemeProvider>
   );
 }
