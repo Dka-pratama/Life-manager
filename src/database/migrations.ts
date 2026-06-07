@@ -45,8 +45,10 @@ export async function runMigrations() {
         CREATE TABLE IF NOT EXISTS habit_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             habit_id INTEGER,
+            progress REAL DEFAULT 0,
             completed_date TEXT,
-            FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE
+            FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE,
+            UNIQUE(habit_id, completed_date)
         );
 
         CREATE TABLE IF NOT EXISTS finance_categories (

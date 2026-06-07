@@ -38,7 +38,7 @@ export async function getTasks() {
 
 export async function getTaskById(id: number) {
 
-  const task = await db.getFirstAsync(
+  const task = await db.getFirstAsync<Task>(
     `SELECT * FROM tasks WHERE id = ?`,
     [id]
   );
@@ -77,4 +77,22 @@ export async function deleteTask(id: number) {
     return result.changes > 0;
 }
 
+export async function toggleTaskStatus(
+  id: number,
+  status: string
+) {
+  const now = new Date().toISOString();
 
+  const result = await db.runAsync(
+    `
+    UPDATE tasks
+    SET
+    status = ?, 
+    update_at = ?
+    WHERE id = ?
+    `,
+    [status, now, id]
+  );
+
+  return result.changes > 0;
+}

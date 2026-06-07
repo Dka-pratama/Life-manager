@@ -1,3 +1,7 @@
+// Menjalankan db saat app start
+// menjalankan migration
+// memberi context
+
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { runMigrations } from './migrations';

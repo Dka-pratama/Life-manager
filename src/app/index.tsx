@@ -1,4 +1,4 @@
-import { View, StyleSheet, Button } from "react-native";
+import { View, StyleSheet } from "react-native";
 import {useEffect, useState} from "react";
 import {createTask, getTasks} from "../repositories/TaskRepository";
 import {FlatList} from "react-native-gesture-handler";
@@ -10,6 +10,9 @@ import Card from "@/components/ui/Card"
 import { useTheme } from '@/contexts/ThemeContext';
 import { BlurView } from 'expo-blur';
 import Text from "@/components/ui/Text";
+import  Button  from "@/components/ui/Button"
+import  Input  from "@/components/ui/Input"
+import Header from "@/components/layout/Header";
 
 
 export default function Index() {
@@ -48,24 +51,24 @@ export default function Index() {
 
   return (
     <View style={styles(colors).container}>
+      <Header 
+      title="Dashboard"
+      subtitle="halloo, ini sub"
+      />
       <Button
         title="Go to Profile"
-        onPress={() => router.push("/(tabs)/profile")}
+        onPress={() => router.push("/(tabs)/dashboard")}
       />
-      
+      <Input
+        label="Email"
+        placeholder="Masukkan email"
+      />
+      <Input
+        label="Description"
+        multiline
+        numberOfLines={4}
+      />
       <Text variant="heading2">Testing database.</Text>
-      <FlatList
-      data={tasks}
-      renderItem={({ item }) => (
-        <BlurView intensity={30}>
-        <Card>
-      <Text variant="body">{item.title} {item.id} {item.description}</Text>
-      <Text variant="bodySmall" color="secondary">{item.description}</Text>
-      <Text variant="caption" color="secondary">{item.title} {item.id} {item.description}</Text>
-        </Card>
-        </BlurView>
-      )}
-        />
               <Text
       style={{ 
         color: colors.text,
@@ -75,17 +78,17 @@ export default function Index() {
        <Button
         title="Light Mode"
         onPress={() => changeTheme('light')}
-        color={colors.primary}
+        variant="secondary"
        />
         <Button
         title="Dark Mode"
         onPress={() => changeTheme('dark')}
-        color={colors.primary}
+        variant="outline"
        />
        <Button
         title="System Default"
+        variant="glass"
         onPress={() => changeTheme('system')}
-        color={colors.primary}
        />
     </View>
   );
@@ -96,7 +99,8 @@ const styles = (Colors : any) =>
   container: {
     backgroundColor: Colors.background,
     flex: 1,
-    alignItems: "center",
+    paddingHorizontal: 16,
+    alignItems: "stretch",
     justifyContent: "center",
   },
 });

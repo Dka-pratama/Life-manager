@@ -7,6 +7,7 @@ export const Colors = {
     tertiary: '#3130C0',
     text: '#191c20',
     textSecondary: '#464555',
+    onPrimary: "#ffffff",
     border: '#C7C4D8',
     outline: '#777587',
     error: '#ba1a1a',
@@ -15,6 +16,9 @@ export const Colors = {
     glassCard: 'rgba(255,255,255,0.7)',
     glassBorder: 'rgba(255,255,255,0.4)',
     glassShadow: 'rgba(79,70,229,0.05)',
+
+    surfaceContainer: '#ededf3',
+    surfaceContainerHigh: '#e7e8ee',
   },
 
   dark: {
@@ -25,6 +29,7 @@ export const Colors = {
     tertiary: '#FFAFD3',
     text: '#dae2fd',
     textSecondary: '#c7c4d7',
+    onPrimary: "#1000a9",
     border: '#464554',
     outline: '#908fa0',
     error: '#ffb4ab',
@@ -33,5 +38,8 @@ export const Colors = {
     glassCard: 'rgba(255, 255, 255, 0.05)',
     glassBorder: 'rgba(255, 255, 255, 0.15)',
     glassShadow: 'rgba(79,70,229,0.15)',
+
+    surfaceContainer: '#171f33',
+    surfaceContainerHigh: '#222a3d',
   },
 };
