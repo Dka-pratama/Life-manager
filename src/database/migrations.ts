@@ -56,7 +56,8 @@ export async function runMigrations() {
             name TEXT NOT NULL,
             type TEXT NOT NULL,
             icon TEXT,
-            color TEXT
+            color TEXT,
+            create_at TEXT
         );
 
         CREATE TABLE IF NOT EXISTS finance_transactions (

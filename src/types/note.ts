@@ -14,4 +14,5 @@ export type CreateNoteData = {
 export type UpdateNoteData = {
     title?: string;
     content?: string;
+    updated_at?: string
 }

@@ -8,6 +8,7 @@ export type FinanceCategory = {
     type: FinanceCategoryType;
     icon: string | null;
     color: string | null;
+    create_at: string
 }
 
 export type CreateFinanceCategoryData = {

@@ -54,3 +54,222 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+```
+Life-manager
+├─ AGENTS.md
+├─ app.json
+├─ assets
+│  ├─ expo.icon
+│  │  ├─ Assets
+│  │  │  ├─ expo-symbol 2.svg
+│  │  │  └─ grid.png
+│  │  └─ icon.json
+│  ├─ fonts
+│  │  ├─ Manrope-Bold.ttf
+│  │  ├─ Manrope-ExtraBold.ttf
+│  │  ├─ Manrope-Medium.ttf
+│  │  ├─ Manrope-Regular.ttf
+│  │  └─ Manrope-SemiBold.ttf
+│  ├─ icons
+│  └─ images
+│     ├─ expo-badge-white.png
+│     ├─ expo-badge.png
+│     ├─ expo-logo.png
+│     ├─ favicon.png
+│     ├─ icon.png
+│     ├─ logo-glow.png
+│     ├─ react-logo.png
+│     ├─ react-logo@2x.png
+│     ├─ react-logo@3x.png
+│     ├─ splash-icon.png
+│     ├─ tabIcons
+│     │  ├─ explore.png
+│     │  ├─ explore@2x.png
+│     │  ├─ explore@3x.png
+│     │  ├─ home.png
+│     │  ├─ home@2x.png
+│     │  └─ home@3x.png
+│     └─ tutorial-web.png
+├─ CLAUDE.md
+├─ LICENSE
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ (tabs)
+│  │  │  ├─ dashboard.tsx
+│  │  │  ├─ finance.tsx
+│  │  │  ├─ habits.tsx
+│  │  │  ├─ profile.tsx
+│  │  │  ├─ task.tsx
+│  │  │  └─ _layout.tsx
+│  │  ├─ habit
+│  │  │  └─ create.tsx
+│  │  ├─ index.tsx
+│  │  ├─ note
+│  │  │  └─ create.tsx
+│  │  ├─ task
+│  │  │  ├─ create.tsx
+│  │  │  └─ edit.tsx
+│  │  └─ _layout.tsx
+│  ├─ components
+│  │  ├─ feedback
+│  │  │  ├─ EmptyState.tsx
+│  │  │  ├─ ErrorState.tsx
+│  │  │  └─ LoadingState.tsx
+│  │  ├─ layout
+│  │  │  ├─ Header.tsx
+│  │  │  ├─ PageContainer.tsx
+│  │  │  ├─ Screen.tsx
+│  │  │  └─ SectionTitle.tsx
+│  │  ├─ navigation
+│  │  │  ├─ BottomTab.tsx
+│  │  │  └─ ProtectedRoute.tsx
+│  │  └─ ui
+│  │     ├─ Button.tsx
+│  │     ├─ Card.tsx
+│  │     ├─ Input.tsx
+│  │     └─ Text.tsx
+│  ├─ constants
+│  │  ├─ colors.ts
+│  │  ├─ Spacing.ts
+│  │  └─ Typography.ts
+│  ├─ contexts
+│  │  └─ ThemeContext.tsx
+│  ├─ database
+│  │  ├─ database.ts
+│  │  ├─ DatabaseProvider.tsx
+│  │  └─ migrations.ts
+│  ├─ repositories
+│  │  ├─ FinanceCategorie.ts
+│  │  ├─ FinanceTransaction.ts
+│  │  ├─ HabitLogRepository.ts
+│  │  ├─ HabitRepository.ts
+│  │  ├─ NoteRepository.ts
+│  │  ├─ SettingsRepository.ts
+│  │  └─ TaskRepository.ts
+│  ├─ services
+│  ├─ stores
+│  ├─ types
+│  │  ├─ financeCategorie.ts
+│  │  ├─ financeTransaction.ts
+│  │  ├─ habit.ts
+│  │  ├─ habitLog.ts
+│  │  ├─ note.ts
+│  │  ├─ task.ts
+│  │  └─ taskNote.ts
+│  └─ utils
+└─ tsconfig.json
+
+```
+```
+Life-manager
+├─ AGENTS.md
+├─ app.json
+├─ assets
+│  ├─ expo.icon
+│  │  ├─ Assets
+│  │  │  ├─ expo-symbol 2.svg
+│  │  │  └─ grid.png
+│  │  └─ icon.json
+│  ├─ fonts
+│  │  ├─ Manrope-Bold.ttf
+│  │  ├─ Manrope-ExtraBold.ttf
+│  │  ├─ Manrope-Medium.ttf
+│  │  ├─ Manrope-Regular.ttf
+│  │  └─ Manrope-SemiBold.ttf
+│  ├─ icons
+│  └─ images
+│     ├─ expo-badge-white.png
+│     ├─ expo-badge.png
+│     ├─ expo-logo.png
+│     ├─ favicon.png
+│     ├─ icon.png
+│     ├─ logo-glow.png
+│     ├─ react-logo.png
+│     ├─ react-logo@2x.png
+│     ├─ react-logo@3x.png
+│     ├─ splash-icon.png
+│     ├─ tabIcons
+│     │  ├─ explore.png
+│     │  ├─ explore@2x.png
+│     │  ├─ explore@3x.png
+│     │  ├─ home.png
+│     │  ├─ home@2x.png
+│     │  └─ home@3x.png
+│     └─ tutorial-web.png
+├─ CLAUDE.md
+├─ LICENSE
+├─ package-lock.json
+├─ package.json
+├─ README.md
+├─ src
+│  ├─ app
+│  │  ├─ (tabs)
+│  │  │  ├─ dashboard.tsx
+│  │  │  ├─ finance.tsx
+│  │  │  ├─ habits.tsx
+│  │  │  ├─ profile.tsx
+│  │  │  ├─ task.tsx
+│  │  │  └─ _layout.tsx
+│  │  ├─ habit
+│  │  │  └─ create.tsx
+│  │  ├─ index.tsx
+│  │  ├─ note
+│  │  │  └─ create.tsx
+│  │  ├─ task
+│  │  │  ├─ create.tsx
+│  │  │  └─ edit.tsx
+│  │  └─ _layout.tsx
+│  ├─ components
+│  │  ├─ feedback
+│  │  │  ├─ EmptyState.tsx
+│  │  │  ├─ ErrorState.tsx
+│  │  │  └─ LoadingState.tsx
+│  │  ├─ layout
+│  │  │  ├─ Header.tsx
+│  │  │  ├─ PageContainer.tsx
+│  │  │  ├─ Screen.tsx
+│  │  │  └─ SectionTitle.tsx
+│  │  ├─ navigation
+│  │  │  ├─ BottomTab.tsx
+│  │  │  └─ ProtectedRoute.tsx
+│  │  └─ ui
+│  │     ├─ Button.tsx
+│  │     ├─ Card.tsx
+│  │     ├─ Input.tsx
+│  │     └─ Text.tsx
+│  ├─ constants
+│  │  ├─ colors.ts
+│  │  ├─ Spacing.ts
+│  │  └─ Typography.ts
+│  ├─ contexts
+│  │  └─ ThemeContext.tsx
+│  ├─ database
+│  │  ├─ database.ts
+│  │  ├─ DatabaseProvider.tsx
+│  │  └─ migrations.ts
+│  ├─ repositories
+│  │  ├─ FinanceCategoryRepository.ts
+│  │  ├─ FinanceTransactionRepository.ts
+│  │  ├─ HabitLogRepository.ts
+│  │  ├─ HabitRepository.ts
+│  │  ├─ NoteRepository.ts
+│  │  ├─ SettingsRepository.ts
+│  │  └─ TaskRepository.ts
+│  ├─ services
+│  ├─ stores
+│  ├─ types
+│  │  ├─ financeCategorie.ts
+│  │  ├─ financeTransaction.ts
+│  │  ├─ habit.ts
+│  │  ├─ habitLog.ts
+│  │  ├─ note.ts
+│  │  ├─ task.ts
+│  │  └─ taskNote.ts
+│  └─ utils
+└─ tsconfig.json
+
+```

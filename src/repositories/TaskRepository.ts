@@ -19,7 +19,7 @@ export async function createTask(data: CreateTaskData) {
     [
       data.title,
       data.description ?? null,
-      data.dueDate ?? null,
+      data.due_date ?? null,
       now,
       now,
     ]
@@ -60,7 +60,7 @@ export async function updateTask(id:number, data: UpdateTaskData) {
         [
             data.title ?? null,
             data.description ?? null,
-            data.dueDate ?? null,
+            data.due_date ?? null,
             data.status ?? null,
             now,
             id

@@ -11,7 +11,7 @@ export type Task = {
 export type CreateTaskData = {
   title: string;
   description?: string;
-  dueDate?: string;
+  due_date?: string;
 };
 
 export type UpdateTaskData = Partial<CreateTaskData> & {

@@ -59,6 +59,10 @@ export default function Index() {
         title="Go to Profile"
         onPress={() => router.push("/(tabs)/dashboard")}
       />
+      <Button
+        title="Go to Test"
+        onPress={() => router.push("/dev/database-test")}
+      />
       <Input
         label="Email"
         placeholder="Masukkan email"
