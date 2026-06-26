@@ -57,7 +57,7 @@ export default function Index() {
       />
       <Button
         title="Go to Profile"
-        onPress={() => router.push("/(tabs)/dashboard")}
+        onPress={() => router.push("/(tabs)/Dashboard")}
       />
       <Button
         title="Go to Test"

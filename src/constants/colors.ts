@@ -10,7 +10,11 @@ export const Colors = {
     onPrimary: "#ffffff",
     border: '#C7C4D8',
     outline: '#777587',
-    error: '#ba1a1a',
+
+    success: "#2E7D32",
+    warning: "#F59E0B",
+    danger: "#D32F2F",
+    error: "#BA1A1A",
     shadow: '#000000',
 
     glassCard: 'rgba(255,255,255,0.7)',
@@ -32,7 +36,12 @@ export const Colors = {
     onPrimary: "#1000a9",
     border: '#464554',
     outline: '#908fa0',
-    error: '#ffb4ab',
+
+    success: "#4ADE80",
+    warning: "#FBBF24",
+    danger: "#F87171",
+    error: "#FFB4AB",
+    
     shadow: '#000000',
 
     glassCard: 'rgba(255, 255, 255, 0.05)',

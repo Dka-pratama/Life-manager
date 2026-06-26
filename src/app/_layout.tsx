@@ -1,12 +1,12 @@
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeProvider } from "../contexts/ThemeContext";
 import DatabaseProvider from "../database/DatabaseProvider";
-import {ThemeProvider} from "../contexts/ThemeContext";
-import { useFonts } from "expo-font";
 
 export default function RootLayout() {
-
-    const [loaded] = useFonts({
+  const [loaded] = useFonts({
     ManropeRegular: require("../../assets/fonts/Manrope-Regular.ttf"),
     ManropeMedium: require("../../assets/fonts/Manrope-Medium.ttf"),
     ManropeSemiBold: require("../../assets/fonts/Manrope-SemiBold.ttf"),
@@ -17,9 +17,15 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <DatabaseProvider>
-          <Stack />
-        </DatabaseProvider>
+        <SafeAreaView style= {{ flex:1 }}>
+          <DatabaseProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            />
+          </DatabaseProvider>
+        </SafeAreaView>
       </GestureHandlerRootView>
     </ThemeProvider>
   );

@@ -22,9 +22,9 @@ export default function Header({
     const { colors } = useTheme();
 
     return (
-  <View style={styles.container}>
-    <View style={styles.row}>
-      <View style={styles.leftSection}>
+  <View style={styles(colors).container}>
+    <View style={styles(colors).row}>
+      <View style={styles(colors).leftSection}>
         {showBackButton && (
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons
@@ -55,9 +55,14 @@ export default function Header({
 );
 }
 
-const styles = StyleSheet.create({
+const styles = (colors : any) => 
+  StyleSheet.create({
     container: {
-        marginBottom: 24,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderColor: colors.surfaceContainerHigh,
+        backgroundColor: colors.surfaceContainer,
     },
     backButton: {
         marginBottom: 12,
