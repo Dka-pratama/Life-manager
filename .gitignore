@@ -8,6 +8,7 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+*.md
 
 # Native
 .kotlin/
@@ -41,3 +42,8 @@ example
 # generated native folders
 /ios
 /android
+
+#AI
+/graphify-out
+.opencode
+.gitattributes

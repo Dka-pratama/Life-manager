@@ -12,6 +12,8 @@ export async function runMigrations() {
             title TEXT NOT NULL,
             description TEXT,
             due_date TEXT,
+            category TEXT DEFAULT 'personal',
+            priority TEXT DEFAULT 'med',
             status TEXT DEFAULT 'pending',
             created_at TEXT,
             updated_at TEXT
@@ -71,4 +73,12 @@ export async function runMigrations() {
             FOREIGN KEY (category_id) REFERENCES finance_categories(id) ON DELETE SET NULL
         );
     `);
+
+    // Add category & priority columns to existing tasks tables
+    try {
+        await db.execAsync(`ALTER TABLE tasks ADD COLUMN category TEXT DEFAULT 'personal'`);
+    } catch (_) {}
+    try {
+        await db.execAsync(`ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'med'`);
+    } catch (_) {}
 }

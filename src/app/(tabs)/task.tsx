@@ -7,7 +7,7 @@ import SearchInput from "@/components/ui/SearchInput";
 import Text from "@/components/ui/Text";
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 
 import EmptyState from "@/components/feedback/EmptyState";
 import LoadingState from "@/components/feedback/LoadingState";
@@ -75,11 +75,8 @@ export default function TaskScreen() {
               {filteredTasks.map((task) => (
                 <Card key={task.id}>
                   <Text variant="heading3">{task.title}</Text>
-
                   {task.description && <Text>{task.description}</Text>}
-
                   <Text>Deadline: {task.due_date ?? "-"}</Text>
-
                   <Text>Status: {task.status}</Text>
 
                   <View

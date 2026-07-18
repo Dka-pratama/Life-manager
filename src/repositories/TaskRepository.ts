@@ -11,15 +11,19 @@ export async function createTask(data: CreateTaskData) {
         title,
         description,
         due_date,
+        category,
+        priority,
         created_at,
         updated_at
       )
-      VALUES (?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
     [
       data.title,
       data.description ?? null,
       data.due_date ?? null,
+      data.category ?? 'personal',
+      data.priority ?? 'med',
       now,
       now,
     ]
@@ -53,6 +57,8 @@ export async function updateTask(id:number, data: UpdateTaskData) {
             title = COALESCE(?, title),
             description = COALESCE(?, description),
             due_date = COALESCE(?, due_date),
+            category = COALESCE(?, category),
+            priority = COALESCE(?, priority),
             status = COALESCE(?, status),
             updated_at = ?
         WHERE id = ?
@@ -61,6 +67,8 @@ export async function updateTask(id:number, data: UpdateTaskData) {
             data.title ?? null,
             data.description ?? null,
             data.due_date ?? null,
+            data.category ?? null,
+            data.priority ?? null,
             data.status ?? null,
             now,
             id
@@ -73,7 +81,7 @@ export async function deleteTask(id: number) {
     const result = await db.runAsync(
         `DELETE FROM tasks WHERE id = ?`,
         [id]
-    );
+    )
     return result.changes > 0;
 }
 
