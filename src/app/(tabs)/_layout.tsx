@@ -93,11 +93,11 @@ export default function TabsLayout() {
 
 function DashboardHeader({ colors }: { colors: any }) {
   return (
-    <View style={styles.dashHeader}>
+    <View style={[styles.dashHeader, { borderBottomColor: colors.surfaceContainerHigh, backgroundColor: colors.surfaceContainer }]}>
       <View style={styles.dashHeaderLeft}>
         <Text variant="heading1">Dashboard</Text>
       </View>
-      <TouchableOpacity style={styles.profileIcon}>
+      <TouchableOpacity style={[styles.profileIcon, { borderColor: colors.glassBorder, backgroundColor: colors.glassCard }]}>
         <Ionicons name="person" size={20} color={colors.primary} />
       </TouchableOpacity>
     </View>

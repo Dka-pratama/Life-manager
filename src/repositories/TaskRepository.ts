@@ -96,7 +96,7 @@ export async function toggleTaskStatus(
     UPDATE tasks
     SET
     status = ?, 
-    update_at = ?
+    updated_at = ?
     WHERE id = ?
     `,
     [status, now, id]
