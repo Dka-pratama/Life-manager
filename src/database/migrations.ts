@@ -81,4 +81,32 @@ export async function runMigrations() {
     try {
         await db.execAsync(`ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'med'`);
     } catch (_) {}
+
+    // Seed default finance categories if empty
+    const catCount = await db.getFirstAsync<{ count: number }>(`SELECT COUNT(*) as count FROM finance_categories`);
+    if (catCount && catCount.count === 0) {
+        const now = new Date().toISOString();
+        const defaultCategories = [
+            // Expense
+            { name: "Food", type: "expense", icon: "restaurant", color: "#fb923c" },
+            { name: "Transport", type: "expense", icon: "car", color: "#60a5fa" },
+            { name: "Shopping", type: "expense", icon: "cart", color: "#f472b6" },
+            { name: "Bills", type: "expense", icon: "flash", color: "#fbbf24" },
+            { name: "Entertainment", type: "expense", icon: "film", color: "#a78bfa" },
+            { name: "Health", type: "expense", icon: "medkit", color: "#ef4444" },
+            { name: "Education", type: "expense", icon: "school", color: "#34d399" },
+            { name: "Other", type: "expense", icon: "wallet", color: "#908fa0" },
+            // Income
+            { name: "Salary", type: "income", icon: "briefcase", color: "#4ade80" },
+            { name: "Freelance", type: "income", icon: "laptop", color: "#2dd4bf" },
+            { name: "Gift", type: "income", icon: "gift", color: "#f472b6" },
+            { name: "Other", type: "income", icon: "wallet", color: "#908fa0" },
+        ];
+        for (const cat of defaultCategories) {
+            await db.runAsync(
+                `INSERT INTO finance_categories (name, type, icon, color, create_at) VALUES (?, ?, ?, ?, ?)`,
+                [cat.name, cat.type, cat.icon, cat.color, now]
+            );
+        }
+    }
 }

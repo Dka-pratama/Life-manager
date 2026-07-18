@@ -12,7 +12,7 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        header: ({ route }) => <Header title={route.name} />,
+        header: ({ route, options }) => <Header title={(options.headerTitle as string) || (options.title as string) || route.name} />,
         tabBarActiveTintColor: IconColors.indigo as string,
         tabBarInactiveTintColor: colors.outline as string,
         tabBarStyle: {
@@ -48,7 +48,8 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="Finance"
         options={{
-          title: "Finance",
+          title: "Wallet",
+          headerTitle: "Wallet",
           tabBarIcon: ({ color, focused }) => (
             <TabIcon name={focused ? "wallet" : "wallet-outline"} color={color} focused={focused} />
           ),

@@ -287,7 +287,7 @@ export default function DashboardScreen() {
           {/* Row 2: Finance */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text variant="heading3">Finance</Text>
+              <Text variant="heading3">Wallet</Text>
               <Text variant="caption" color="secondary">
                 {new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" })}
               </Text>
@@ -316,16 +316,6 @@ export default function DashboardScreen() {
                     {formatCurrency(expense)}
                   </Text>
                 </View>
-              </View>
-              {/* Net */}
-              <View style={[styles.netRow, { borderTopWidth: 1, borderTopColor: colors.glassBorder, marginTop: Spacing.md }]}>
-                <Text variant="bodySmall" color="secondary">Net</Text>
-                <Text
-                  variant="body"
-                  style={{ fontWeight: "700", color: income - expense >= 0 ? IconColors.income : IconColors.expense }}
-                >
-                  {formatCurrency(income - expense)}
-                </Text>
               </View>
             </Card>
           </View>
@@ -467,12 +457,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   financeCol: { alignItems: "center", flex: 1 },
-  netRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: Spacing.sm,
-  },
   urgencyBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
