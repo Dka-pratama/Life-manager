@@ -19,23 +19,11 @@ import FloatingButton from "@/components/ui/FloatingButton";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
+import { ICON_OPTIONS, COLOR_OPTIONS, type IconOption, type ColorOption } from "@/constants/iconOptions";
 
 import { getFinanceCategories, CreateFinanceCategory, DeleteFinanceCategory } from "@/repositories/FinanceCategoryRepository";
 
 import type { FinanceCategory, FinanceCategoryType } from "@/types/financeCategorie";
-
-const ICON_OPTIONS = [
-  "restaurant", "home", "cart", "car", "flash", "bag-handle",
-  "fitness", "book", "film", "musical-notes", "airplane", "briefcase",
-  "heart", "gift", "paw", "leaf", "cafe", "pizza",
-  "phone-portrait", "laptop", "shirt", "medkit", "school", "wallet",
-];
-
-const COLOR_OPTIONS = [
-  IconColors.indigo, IconColors.teal, IconColors.income, IconColors.expense,
-  "#fb923c", "#f472b6", "#a78bfa", "#60a5fa",
-  "#34d399", "#fbbf24", "#ef4444", "#8b5cf6",
-];
 
 export default function CategoriesScreen() {
   const { colors } = useTheme();
@@ -46,8 +34,8 @@ export default function CategoriesScreen() {
 
   // New category form
   const [newName, setNewName] = useState("");
-  const [newIcon, setNewIcon] = useState(ICON_OPTIONS[0]);
-  const [newColor, setNewColor] = useState(COLOR_OPTIONS[0]);
+  const [newIcon, setNewIcon] = useState<IconOption>(ICON_OPTIONS[0]);
+  const [newColor, setNewColor] = useState<ColorOption>(COLOR_OPTIONS[0]);
 
   const loadData = useCallback(async () => {
     try {
