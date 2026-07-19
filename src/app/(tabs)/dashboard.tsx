@@ -86,11 +86,13 @@ export default function DashboardScreen() {
 
   // Compute habit stats
   const totalHabits = habits.length;
-  const completedHabits = habits.filter((h) => {
+  const totalProgress = habits.reduce((sum, h) => {
     const log = habitLogs.get(h.id);
-    return log && log.progress >= 1;
-  }).length;
-  const habitPercent = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+    const current = log ? Math.min(log.progress, h.target_per_day) : 0;
+    return sum + current;
+  }, 0);
+  const totalTarget = habits.reduce((sum, h) => sum + h.target_per_day, 0);
+  const habitPercent = totalTarget > 0 ? Math.round((totalProgress / totalTarget) * 100) : 0;
 
   // Compute finance stats for current month
   const monthTransactions = transactions.filter((t) =>
@@ -225,15 +227,17 @@ export default function DashboardScreen() {
                 <View style={styles.heroInfo}>
                   <Text variant="heading3">Today's Progress</Text>
                   <Text variant="bodySmall" color="secondary" style={{ marginTop: 4, marginBottom: Spacing.sm }}>
-                    {completedHabits} of {totalHabits} habits completed. Stay consistent!
+                    {Math.round(totalProgress)} of {totalTarget} targets. Stay consistent!
                   </Text>
                   <View style={styles.badgeRow}>
-                    <View style={[styles.badge, { borderColor: `${IconColors.teal}33` }]}>
+                    <View style={[styles.badge, { backgroundColor: `${IconColors.teal}15` }]}>
+                      <Ionicons name="checkmark-circle" size={12} color={IconColors.teal} />
                       <Text variant="caption" style={{ color: IconColors.teal }}>
-                        {completedHabits}/{totalHabits}
+                        {Math.round(totalProgress)}/{totalTarget}
                       </Text>
                     </View>
-                    <View style={[styles.badge, { borderColor: `${IconColors.indigo}33` }]}>
+                    <View style={[styles.badge, { backgroundColor: `${IconColors.indigo}15` }]}>
+                      <Ionicons name="trending-up" size={12} color={IconColors.indigo} />
                       <Text variant="caption" style={{ color: IconColors.indigo }}>
                         {habitPercent}%
                       </Text>
@@ -248,7 +252,7 @@ export default function DashboardScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text variant="heading3">Habits</Text>
-              <Text variant="caption" color="secondary">{completedHabits}/{totalHabits}</Text>
+              <Text variant="caption" color="secondary">{Math.round(totalProgress)}/{totalTarget}</Text>
             </View>
             <Card padding={Spacing.md} radius={20}>
               {habits.length === 0 ? (
@@ -400,31 +404,21 @@ const styles = StyleSheet.create({
   },
   dayCellActive: {
     backgroundColor: "rgba(99, 102, 241, 0.8)",
-    shadowColor: "#6366f1",
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
   },
   activeDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#fff" },
-  heroCard: {
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
-  },
+  heroCard: {},
   heroRow: { flexDirection: "row", alignItems: "center", gap: Spacing.lg },
   ringContainer: { width: 128, height: 128, justifyContent: "center", alignItems: "center" },
   ringCenter: { position: "absolute", alignItems: "center" },
   heroInfo: { flex: 1 },
   badgeRow: { flexDirection: "row", gap: 8 },
   badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: 20,
-    borderWidth: 1,
-    backgroundColor: "rgba(255,255,255,0.03)",
   },
   listRow: {
     flexDirection: "row",

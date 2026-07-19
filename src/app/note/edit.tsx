@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -16,17 +16,41 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
 
-import { CreateNote } from "@/repositories/NoteRepository";
+import { getNoteById, UpdateNote, DeleteNote } from "@/repositories/NoteRepository";
 
-export default function CreateNoteScreen() {
+import type { Note } from "@/types/note";
+
+export default function EditNoteScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
+  const [note, setNote] = useState<Note | null>(null);
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [infoDialogVisible, setInfoDialogVisible] = useState(false);
   const [infoDialogTitle, setInfoDialogTitle] = useState("");
   const [infoDialogMessage, setInfoDialogMessage] = useState("");
   const [infoDialogType, setInfoDialogType] = useState<"error" | "warning" | "info">("info");
+
+  useEffect(() => {
+    if (id) loadNote(Number(id));
+  }, [id]);
+
+  const loadNote = async (noteId: number) => {
+    try {
+      const n = await getNoteById(noteId);
+      if (n) {
+        setNote(n);
+        setTitle(n.title);
+        setContent(n.content || "");
+      }
+    } catch (e) {
+      console.error("Load note error:", e);
+    }
+  };
 
   const handleSave = async () => {
     if (!title.trim()) {
@@ -36,10 +60,11 @@ export default function CreateNoteScreen() {
       setInfoDialogVisible(true);
       return;
     }
+    if (!id) return;
 
     try {
       setLoading(true);
-      await CreateNote({
+      await UpdateNote(Number(id), {
         title: title.trim(),
         content: content.trim() || undefined,
       });
@@ -47,13 +72,39 @@ export default function CreateNoteScreen() {
     } catch (e) {
       console.error(e);
       setInfoDialogTitle("Error");
-      setInfoDialogMessage("Failed to save note.");
+      setInfoDialogMessage("Failed to update note.");
       setInfoDialogType("error");
       setInfoDialogVisible(true);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleDelete = () => {
+    setDeleteDialogVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setDeleteLoading(true);
+      await DeleteNote(Number(id));
+      setDeleteDialogVisible(false);
+      router.back();
+    } catch (e) {
+      console.error(e);
+      setDeleteLoading(false);
+    }
+  };
+
+  if (!note) {
+    return (
+      <Screen>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text variant="bodySmall" color="secondary">Loading...</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen style={{ paddingHorizontal: 0 }}>
@@ -63,10 +114,10 @@ export default function CreateNoteScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={22} color={colors.primary} />
           </TouchableOpacity>
-          <Text variant="heading3">Add Note</Text>
+          <Text variant="heading3">Edit Note</Text>
         </View>
-        <TouchableOpacity onPress={() => { setTitle(""); setContent(""); }}>
-          <Text variant="bodySmall" style={{ color: colors.primary, textTransform: "uppercase", letterSpacing: 1 }}>Clear</Text>
+        <TouchableOpacity onPress={handleDelete}>
+          <Ionicons name="trash-outline" size={20} color={IconColors.expense} />
         </TouchableOpacity>
       </View>
 
@@ -102,24 +153,6 @@ export default function CreateNoteScreen() {
               />
             </View>
           </View>
-
-          {/* Preview */}
-          {(title || content) && (
-            <View style={styles.section}>
-              <Text variant="caption" color="secondary" style={styles.label}>PREVIEW</Text>
-              <View style={[styles.previewCard, { backgroundColor: colors.surfaceContainer, borderColor: colors.glassBorder }]}>
-                <View style={[styles.previewIcon, { backgroundColor: `${IconColors.indigo}20` }]}>
-                  <Ionicons name="document-text" size={24} color={IconColors.indigo} />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text variant="body" style={{ fontWeight: "700" }}>{title || "Note Title"}</Text>
-                  {content ? (
-                    <Text variant="caption" color="secondary" numberOfLines={2} style={{ marginTop: 4 }}>{content}</Text>
-                  ) : null}
-                </View>
-              </View>
-            </View>
-          )}
         </View>
       </ScrollView>
 
@@ -133,10 +166,23 @@ export default function CreateNoteScreen() {
         >
           <Ionicons name="checkmark" size={22} color="#fff" />
           <Text variant="body" style={{ color: "#fff", fontWeight: "700" }}>
-            {loading ? "Saving..." : "Save Note"}
+            {loading ? "Saving..." : "Update Note"}
           </Text>
         </TouchableOpacity>
       </View>
+
+      <AlertDialog
+        visible={deleteDialogVisible}
+        title="Delete Note"
+        message="Are you sure you want to delete this note? This action cannot be undone."
+        type="error"
+        confirmText="Delete"
+        cancelText="Cancel"
+        showCancel
+        loading={deleteLoading}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialogVisible(false)}
+      />
 
       <AlertDialog
         visible={infoDialogVisible}
@@ -199,21 +245,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     minHeight: 180,
     padding: 0,
-  },
-  previewCard: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 14,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  previewIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
   },
   saveContainer: {
     position: "absolute",

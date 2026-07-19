@@ -263,7 +263,12 @@ export default function TaskScreen() {
                     : null;
 
                   return (
-                    <Card key={task.id} padding={Spacing.md} radius={16} style={done ? { opacity: 0.5 } : undefined}>
+                    <TouchableOpacity
+                      key={task.id}
+                      activeOpacity={0.7}
+                      onPress={() => router.push(`/task/edit?id=${task.id}`)}
+                    >
+                    <Card padding={Spacing.md} radius={16} style={done ? { opacity: 0.5 } : undefined}>
                       <View style={styles.taskRow}>
                         {/* Checkbox */}
                         <TouchableOpacity onPress={() => handleToggle(task)} activeOpacity={0.7}>
@@ -317,6 +322,7 @@ export default function TaskScreen() {
                         </View>
                       </View>
                     </Card>
+                    </TouchableOpacity>
                   );
                 })}
 

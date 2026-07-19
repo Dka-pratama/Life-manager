@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Modal,
   Pressable,
 } from "react-native";
@@ -16,6 +15,7 @@ import { useFocusEffect } from "expo-router";
 import Screen from "@/components/layout/Screen";
 import Text from "@/components/ui/Text";
 import FloatingButton from "@/components/ui/FloatingButton";
+import AlertDialog from "@/components/feedback/AlertDialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
@@ -36,6 +36,13 @@ export default function CategoriesScreen() {
   const [newName, setNewName] = useState("");
   const [newIcon, setNewIcon] = useState<IconOption>(ICON_OPTIONS[0]);
   const [newColor, setNewColor] = useState<ColorOption>(COLOR_OPTIONS[0]);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<FinanceCategory | null>(null);
+  const [infoDialogVisible, setInfoDialogVisible] = useState(false);
+  const [infoDialogTitle, setInfoDialogTitle] = useState("");
+  const [infoDialogMessage, setInfoDialogMessage] = useState("");
+  const [infoDialogType, setInfoDialogType] = useState<"error" | "warning" | "info">("info");
 
   const loadData = useCallback(async () => {
     try {
@@ -56,7 +63,10 @@ export default function CategoriesScreen() {
 
   const handleAdd = async () => {
     if (!newName.trim()) {
-      Alert.alert("Validation", "Category name is required.");
+      setInfoDialogTitle("Validation");
+      setInfoDialogMessage("Category name is required.");
+      setInfoDialogType("warning");
+      setInfoDialogVisible(true);
       return;
     }
 
@@ -75,30 +85,30 @@ export default function CategoriesScreen() {
       loadData();
     } catch (e) {
       console.error(e);
-      Alert.alert("Error", "Failed to add category.");
+      setInfoDialogTitle("Error");
+      setInfoDialogMessage("Failed to add category.");
+      setInfoDialogType("error");
+      setInfoDialogVisible(true);
     }
   };
 
   const handleDelete = (cat: FinanceCategory) => {
-    Alert.alert(
-      "Delete Category",
-      `Delete "${cat.name}"? Transactions using this category will become uncategorized.`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await DeleteFinanceCategory(cat.id);
-              loadData();
-            } catch (e) {
-              console.error(e);
-            }
-          },
-        },
-      ]
-    );
+    setDeleteTarget(cat);
+    setDeleteDialogVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      setDeleteLoading(true);
+      await DeleteFinanceCategory(deleteTarget.id);
+      setDeleteDialogVisible(false);
+      setDeleteTarget(null);
+      loadData();
+    } catch (e) {
+      console.error(e);
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -249,6 +259,28 @@ export default function CategoriesScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      <AlertDialog
+        visible={deleteDialogVisible}
+        title="Delete Category"
+        message={deleteTarget ? `Delete "${deleteTarget.name}"? Transactions using this category will become uncategorized.` : ""}
+        type="error"
+        confirmText="Delete"
+        cancelText="Cancel"
+        showCancel
+        loading={deleteLoading}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialogVisible(false)}
+      />
+
+      <AlertDialog
+        visible={infoDialogVisible}
+        title={infoDialogTitle}
+        message={infoDialogMessage}
+        type={infoDialogType}
+        confirmText="OK"
+        onConfirm={() => setInfoDialogVisible(false)}
+      />
     </Screen>
   );
 }

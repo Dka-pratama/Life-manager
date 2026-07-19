@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -17,22 +17,47 @@ import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
 import { ICON_OPTIONS, COLOR_OPTIONS, type IconOption, type ColorOption } from "@/constants/iconOptions";
 
-import { createHabit } from "@/repositories/HabitRepository";
+import { getHabitById, updateHabit, deleteHabit } from "@/repositories/HabitRepository";
+
+import type { Habit } from "@/types/habit";
 
 const TARGET_OPTIONS = [1, 2, 3, 4, 5, 6, 7];
 
-export default function CreateHabitScreen() {
+export default function EditHabitScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
+  const [habit, setHabit] = useState<Habit | null>(null);
 
   const [name, setName] = useState("");
   const [icon, setIcon] = useState<IconOption>(ICON_OPTIONS[0]);
   const [color, setColor] = useState<ColorOption>(COLOR_OPTIONS[0]);
   const [target, setTarget] = useState(1);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [infoDialogVisible, setInfoDialogVisible] = useState(false);
   const [infoDialogTitle, setInfoDialogTitle] = useState("");
   const [infoDialogMessage, setInfoDialogMessage] = useState("");
   const [infoDialogType, setInfoDialogType] = useState<"error" | "warning" | "info">("info");
+
+  useEffect(() => {
+    if (id) loadHabit(Number(id));
+  }, [id]);
+
+  const loadHabit = async (habitId: number) => {
+    try {
+      const h = await getHabitById(habitId);
+      if (h) {
+        setHabit(h);
+        setName(h.name);
+        if (h.icon && ICON_OPTIONS.includes(h.icon as IconOption)) setIcon(h.icon as IconOption);
+        if (h.color && COLOR_OPTIONS.includes(h.color as ColorOption)) setColor(h.color as ColorOption);
+        setTarget(h.target_per_day || 1);
+      }
+    } catch (e) {
+      console.error("Load habit error:", e);
+    }
+  };
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -42,10 +67,11 @@ export default function CreateHabitScreen() {
       setInfoDialogVisible(true);
       return;
     }
+    if (!id) return;
 
     try {
       setLoading(true);
-      await createHabit({
+      await updateHabit(Number(id), {
         name: name.trim(),
         icon,
         color,
@@ -55,13 +81,39 @@ export default function CreateHabitScreen() {
     } catch (e) {
       console.error(e);
       setInfoDialogTitle("Error");
-      setInfoDialogMessage("Failed to save habit.");
+      setInfoDialogMessage("Failed to update habit.");
       setInfoDialogType("error");
       setInfoDialogVisible(true);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleDelete = () => {
+    setDeleteDialogVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setDeleteLoading(true);
+      await deleteHabit(Number(id));
+      setDeleteDialogVisible(false);
+      router.back();
+    } catch (e) {
+      console.error(e);
+      setDeleteLoading(false);
+    }
+  };
+
+  if (!habit) {
+    return (
+      <Screen>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text variant="bodySmall" color="secondary">Loading...</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen style={{ paddingHorizontal: 0 }}>
@@ -71,10 +123,10 @@ export default function CreateHabitScreen() {
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="arrow-back" size={22} color={colors.primary} />
           </TouchableOpacity>
-          <Text variant="heading3">Add Habit</Text>
+          <Text variant="heading3">Edit Habit</Text>
         </View>
-        <TouchableOpacity onPress={() => { setName(""); setIcon(ICON_OPTIONS[0]); setColor(COLOR_OPTIONS[0]); setTarget(1); }}>
-          <Text variant="bodySmall" style={{ color: colors.primary, textTransform: "uppercase", letterSpacing: 1 }}>Clear</Text>
+        <TouchableOpacity onPress={handleDelete}>
+          <Ionicons name="trash-outline" size={20} color={IconColors.expense} />
         </TouchableOpacity>
       </View>
 
@@ -196,10 +248,23 @@ export default function CreateHabitScreen() {
         >
           <Ionicons name="checkmark" size={22} color="#fff" />
           <Text variant="body" style={{ color: "#fff", fontWeight: "700" }}>
-            {loading ? "Saving..." : "Save Habit"}
+            {loading ? "Saving..." : "Update Habit"}
           </Text>
         </TouchableOpacity>
       </View>
+
+      <AlertDialog
+        visible={deleteDialogVisible}
+        title="Delete Habit"
+        message="Are you sure you want to delete this habit? This action cannot be undone."
+        type="error"
+        confirmText="Delete"
+        cancelText="Cancel"
+        showCancel
+        loading={deleteLoading}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteDialogVisible(false)}
+      />
 
       <AlertDialog
         visible={infoDialogVisible}

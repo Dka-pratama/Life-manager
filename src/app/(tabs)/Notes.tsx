@@ -84,15 +84,21 @@ export default function NotesScreen() {
                 return (
                   <Card key={note.id} padding={Spacing.md} radius={20}>
                     <View style={styles.noteRow}>
-                      <View style={[styles.noteIcon, { backgroundColor: `${IconColors.indigo}20` }]}>
-                        <Ionicons name="document-text" size={20} color={IconColors.indigo} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                        <Text variant="heading3" style={{ lineHeight: 28 }}>{note.title}</Text>
-                        <Text variant="caption" color="secondary">
-                          {taskCount > 0 ? `${taskCount} task${taskCount > 1 ? "s" : ""} linked` : "No tasks linked"}
-                        </Text>
-                      </View>
+                      <TouchableOpacity
+                        style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: Spacing.sm }}
+                        activeOpacity={0.7}
+                        onPress={() => router.push(`/note/edit?id=${note.id}`)}
+                      >
+                        <View style={[styles.noteIcon, { backgroundColor: `${IconColors.indigo}20` }]}>
+                          <Ionicons name="document-text" size={20} color={IconColors.indigo} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text variant="heading3" style={{ lineHeight: 28 }}>{note.title}</Text>
+                          <Text variant="caption" color="secondary">
+                            {taskCount > 0 ? `${taskCount} task${taskCount > 1 ? "s" : ""} linked` : "No tasks linked"}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
                       <TouchableOpacity
                         onPress={async () => {
                           await DeleteNote(note.id);

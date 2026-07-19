@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Platform,
   Dimensions,
 } from "react-native";
@@ -16,6 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Screen from "@/components/layout/Screen";
 import Text from "@/components/ui/Text";
 import Card from "@/components/ui/Card";
+import AlertDialog from "@/components/feedback/AlertDialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
@@ -40,6 +40,10 @@ export default function CreateTransactionScreen() {
   const [transactionDate, setTransactionDate] = useState(new Date());
   const [note, setNote] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [infoDialogVisible, setInfoDialogVisible] = useState(false);
+  const [infoDialogTitle, setInfoDialogTitle] = useState("");
+  const [infoDialogMessage, setInfoDialogMessage] = useState("");
+  const [infoDialogType, setInfoDialogType] = useState<"error" | "warning" | "info">("info");
 
   useEffect(() => {
     loadCategories();
@@ -81,12 +85,18 @@ export default function CreateTransactionScreen() {
   const handleSave = async () => {
     const numAmount = parseInt(amount.replace(/[^0-9]/g, ""), 10);
     if (!numAmount || numAmount <= 0) {
-      Alert.alert("Validation", "Amount must be greater than 0.");
+      setInfoDialogTitle("Validation");
+      setInfoDialogMessage("Amount must be greater than 0.");
+      setInfoDialogType("warning");
+      setInfoDialogVisible(true);
       return;
     }
 
     if (!selectedCategory) {
-      Alert.alert("Validation", "Please select a category.");
+      setInfoDialogTitle("Validation");
+      setInfoDialogMessage("Please select a category.");
+      setInfoDialogType("warning");
+      setInfoDialogVisible(true);
       return;
     }
 
@@ -106,7 +116,10 @@ export default function CreateTransactionScreen() {
       router.back();
     } catch (e) {
       console.error(e);
-      Alert.alert("Error", "Failed to save transaction.");
+      setInfoDialogTitle("Error");
+      setInfoDialogMessage("Failed to save transaction.");
+      setInfoDialogType("error");
+      setInfoDialogVisible(true);
     } finally {
       setLoading(false);
     }
@@ -277,6 +290,15 @@ export default function CreateTransactionScreen() {
           <Ionicons name="arrow-forward" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
+
+      <AlertDialog
+        visible={infoDialogVisible}
+        title={infoDialogTitle}
+        message={infoDialogMessage}
+        type={infoDialogType}
+        confirmText="OK"
+        onConfirm={() => setInfoDialogVisible(false)}
+      />
     </Screen>
   );
 }

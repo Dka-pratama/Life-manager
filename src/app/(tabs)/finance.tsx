@@ -110,7 +110,7 @@ export default function FinanceScreen() {
               <Text variant="bodySmall" color="secondary" style={styles.heroLabel}>
                 TOTAL BALANCE
               </Text>
-              <Text variant="displayLarge" style={styles.heroAmount}>
+              <Text variant="displayLarge" style={[styles.heroAmount, { color: colors.text }]}>
                 {formatCurrency(balance)}
               </Text>
               <View style={styles.heroSummaryRow}>

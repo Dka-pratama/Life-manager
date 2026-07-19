@@ -18,7 +18,7 @@ import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
 
 import { getHabits } from "@/repositories/HabitRepository";
-import { getHabitLogByDate } from "@/repositories/HabitLogRepository";
+import { getHabitLogByDate, saveHabitProgress } from "@/repositories/HabitLogRepository";
 
 import type { Habit } from "@/types/habit";
 import type { HabitLog } from "@/types/habitLog";
@@ -64,11 +64,13 @@ export default function HabitsScreen() {
   };
 
   const totalHabits = habits.length;
-  const completedHabits = habits.filter((h) => {
+  const totalProgress = habits.reduce((sum, h) => {
     const log = habitLogs.get(h.id);
-    return log && log.progress >= 1;
-  }).length;
-  const habitPercent = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+    const current = log ? Math.min(log.progress, h.target_per_day) : 0;
+    return sum + current;
+  }, 0);
+  const totalTarget = habits.reduce((sum, h) => sum + h.target_per_day, 0);
+  const habitPercent = totalTarget > 0 ? Math.round((totalProgress / totalTarget) * 100) : 0;
 
   const dayOfWeek = new Date().getDay();
   const activeDayIdx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
@@ -146,7 +148,7 @@ export default function HabitsScreen() {
                 <View style={{ flex: 1 }}>
                   <Text variant="heading3">Daily Progress</Text>
                   <Text variant="body" color="secondary" style={{ marginTop: 2 }}>
-                    {completedHabits} of {totalHabits} habits completed today
+                    {Math.round(totalProgress)} of {totalTarget} targets completed
                   </Text>
                 </View>
                 <Text variant="heading1" style={{ color: colors.primary }}>
@@ -166,12 +168,14 @@ export default function HabitsScreen() {
 
               {/* Badges */}
               <View style={styles.badgeRow}>
-                <View style={[styles.badge, { borderColor: `${IconColors.teal}33` }]}>
+                <View style={[styles.badge, { backgroundColor: `${IconColors.teal}15` }]}>
+                  <Ionicons name="checkmark-circle" size={12} color={IconColors.teal} />
                   <Text variant="caption" style={{ color: IconColors.teal }}>
-                    {completedHabits}/{totalHabits} Done
+                    {Math.round(totalProgress)}/{totalTarget} Done
                   </Text>
                 </View>
-                <View style={[styles.badge, { borderColor: `${IconColors.indigo}33` }]}>
+                <View style={[styles.badge, { backgroundColor: `${IconColors.indigo}15` }]}>
+                  <Ionicons name="trending-up" size={12} color={IconColors.indigo} />
                   <Text variant="caption" style={{ color: IconColors.indigo }}>
                     {habitPercent}%
                   </Text>
@@ -200,13 +204,50 @@ export default function HabitsScreen() {
               <View style={{ gap: 12 }}>
                 {habits.map((habit) => {
                   const log = habitLogs.get(habit.id);
-                  const done = log && log.progress >= 1;
+                  const currentProgress = log ? Math.min(log.progress, habit.target_per_day) : 0;
+                  const done = currentProgress >= habit.target_per_day;
                   const habitColor = habit.color || IconColors.indigo;
+
+                  const handleIncrement = async () => {
+                    if (done) return;
+                    const newProgress = currentProgress + 1;
+                    const today = new Date().toISOString().split("T")[0];
+                    try {
+                      await saveHabitProgress({
+                        habit_id: habit.id,
+                        progress: newProgress,
+                        completed_date: today,
+                      });
+                      loadData();
+                    } catch (e) {
+                      console.error("Increment error:", e);
+                    }
+                  };
+
+                  const handleDecrement = async () => {
+                    if (currentProgress <= 0) return;
+                    const newProgress = currentProgress - 1;
+                    const today = new Date().toISOString().split("T")[0];
+                    try {
+                      await saveHabitProgress({
+                        habit_id: habit.id,
+                        progress: newProgress,
+                        completed_date: today,
+                      });
+                      loadData();
+                    } catch (e) {
+                      console.error("Decrement error:", e);
+                    }
+                  };
 
                   return (
                     <Card key={habit.id} padding={Spacing.md} radius={20}>
                       <View style={styles.habitRow}>
-                        <View style={styles.habitLeft}>
+                        <TouchableOpacity
+                          style={styles.habitLeft}
+                          activeOpacity={0.7}
+                          onPress={() => router.push(`/habit/edit?id=${habit.id}`)}
+                        >
                           <View
                             style={[
                               styles.habitIcon,
@@ -227,23 +268,36 @@ export default function HabitsScreen() {
                               {habit.target_per_day}x daily target
                             </Text>
                           </View>
-                        </View>
-
-                        <TouchableOpacity
-                          style={[
-                            styles.checkBtn,
-                            done
-                              ? { backgroundColor: `${IconColors.teal}15`, borderColor: `${IconColors.teal}33` }
-                              : { backgroundColor: colors.glassCard, borderColor: colors.glassBorder },
-                          ]}
-                          activeOpacity={0.7}
-                        >
-                          {done ? (
-                            <Ionicons name="checkmark-circle" size={24} color={IconColors.teal} />
-                          ) : (
-                            <View style={[styles.emptyCheck, { borderColor: colors.outline }]} />
-                          )}
                         </TouchableOpacity>
+
+                        {/* Progress Controls */}
+                        <View style={styles.progressControls}>
+                          <TouchableOpacity
+                            style={[styles.progressBtn, { backgroundColor: colors.glassCard, borderColor: colors.glassBorder }]}
+                            onPress={handleDecrement}
+                            disabled={currentProgress <= 0}
+                          >
+                            <Ionicons name="remove" size={16} color={currentProgress <= 0 ? colors.outline : colors.text} />
+                          </TouchableOpacity>
+
+                          <View style={styles.progressValue}>
+                            {done ? (
+                              <Ionicons name="checkmark-circle" size={22} color={IconColors.teal} />
+                            ) : (
+                              <Text variant="bodySmall" style={{ fontWeight: "700", color: habitColor }}>
+                                {currentProgress}/{habit.target_per_day}
+                              </Text>
+                            )}
+                          </View>
+
+                          <TouchableOpacity
+                            style={[styles.progressBtn, done ? { backgroundColor: `${IconColors.teal}15`, borderColor: `${IconColors.teal}33` } : { backgroundColor: colors.glassCard, borderColor: colors.glassBorder }]}
+                            onPress={handleIncrement}
+                            disabled={done}
+                          >
+                            <Ionicons name="add" size={16} color={done ? IconColors.teal : colors.text} />
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     </Card>
                   );
@@ -281,20 +335,9 @@ const styles = StyleSheet.create({
   },
   dayCellActive: {
     backgroundColor: "rgba(99, 102, 241, 0.8)",
-    shadowColor: "#6366f1",
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
   },
   activeDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#fff" },
-  heroCard: {
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
-  },
+  heroCard: {},
   progressHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -315,11 +358,12 @@ const styles = StyleSheet.create({
   },
   badgeRow: { flexDirection: "row", gap: 8 },
   badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: 20,
-    borderWidth: 1,
-    backgroundColor: "rgba(255,255,255,0.03)",
   },
   habitRow: {
     flexDirection: "row",
@@ -339,19 +383,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  checkBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+  progressControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  progressBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  emptyCheck: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
+  progressValue: {
+    minWidth: 48,
+    alignItems: "center",
   },
   emptyState: {
     alignItems: "center",

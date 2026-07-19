@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,6 +14,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import Screen from "@/components/layout/Screen";
 import Text from "@/components/ui/Text";
 import Card from "@/components/ui/Card";
+import AlertDialog from "@/components/feedback/AlertDialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Spacing } from "@/constants/Spacing";
 import { IconColors } from "@/constants/iconColors";
@@ -53,6 +53,10 @@ export default function CreateTaskScreen() {
   const [newNoteTitle, setNewNoteTitle] = useState("");
   const [newNoteContent, setNewNoteContent] = useState("");
   const [showNewNote, setShowNewNote] = useState(false);
+  const [infoDialogVisible, setInfoDialogVisible] = useState(false);
+  const [infoDialogTitle, setInfoDialogTitle] = useState("");
+  const [infoDialogMessage, setInfoDialogMessage] = useState("");
+  const [infoDialogType, setInfoDialogType] = useState<"error" | "warning" | "info">("info");
 
   useEffect(() => {
     loadNotes();
@@ -81,7 +85,10 @@ export default function CreateTaskScreen() {
 
   const handleSave = async () => {
     if (!title.trim()) {
-      Alert.alert("Validation", "Task name is required.");
+      setInfoDialogTitle("Validation");
+      setInfoDialogMessage("Task name is required.");
+      setInfoDialogType("warning");
+      setInfoDialogVisible(true);
       return;
     }
 
@@ -117,7 +124,10 @@ export default function CreateTaskScreen() {
       router.back();
     } catch (e) {
       console.error(e);
-      Alert.alert("Error", "Failed to save task.");
+      setInfoDialogTitle("Error");
+      setInfoDialogMessage("Failed to save task.");
+      setInfoDialogType("error");
+      setInfoDialogVisible(true);
     } finally {
       setLoading(false);
     }
@@ -361,6 +371,15 @@ export default function CreateTaskScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
+      <AlertDialog
+        visible={infoDialogVisible}
+        title={infoDialogTitle}
+        message={infoDialogMessage}
+        type={infoDialogType}
+        confirmText="OK"
+        onConfirm={() => setInfoDialogVisible(false)}
+      />
     </Screen>
   );
 }
